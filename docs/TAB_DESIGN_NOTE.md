@@ -1,0 +1,1 @@
+Dashboard navigation update requested on 27/07/2026: add direct PDF viewer tabs for (1) Nghị quyết 47/2026/NQ-HĐND and (2) Báo cáo tổng kết công tác đào tạo, bồi dưỡng giai đoạn 2021-2025. This note records the UI change request; index.html implements the visible tabs.
