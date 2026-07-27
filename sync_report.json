@@ -1,0 +1,172 @@
+{
+  "meeting_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/Qr.aspx?Id=16834",
+  "attachment_endpoint": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/Frontend/Mobile/LoadDanhSachChiaSeTaiLieu.aspx?pageId=1&pageSize=50&IDLichHop=16834",
+  "group_id": "18725",
+  "expected": 18,
+  "downloaded": 18,
+  "results": [
+    {
+      "index": 1,
+      "source_name": "1. Tơ trình UBND tỉnh trình du thao Nghi quyet.pdf",
+      "normalized_file": "files/01_To_trinh_UBND_tinh_trinh_du_thao_Nghi_quyet.pdf",
+      "searchable_text": "text/01.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15705/1.%20To%20trinh%20UBND%20tinh%20trinh%20du%20thao%20Nghi%20quyet.pdf",
+      "bytes": 785593,
+      "sha256": "a68ed1d29646dd284470464cf6c68a16494389f00bd6fe82b2400001c88df627"
+    },
+    {
+      "index": 2,
+      "source_name": "2. Du thao Nghi quyet -trinh thong qua HDND tinh chuan (1).docx",
+      "normalized_file": "files/02_Du_thao_Nghi_quyet_trinh_thong_qua_HDND_tinh.docx",
+      "searchable_text": "text/02.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15706/2.%20Du%20thao%20Nghi%20quyet%20-trinh%20thong%20qua%20HDND%20tinh%20chuan%20(1).docx",
+      "bytes": 63766,
+      "sha256": "f4d8c96976df8c5dea46c4d4e8240198950055d8fce725dc3d24cd1d6048dcba"
+    },
+    {
+      "index": 3,
+      "source_name": "3. BC-tong ket cong tac dao tao va cac chinh sach giai doan 2021-2025.pdf",
+      "normalized_file": "files/03_BC_tong_ket_cong_tac_dao_tao_chinh_sach_2021_2025.pdf",
+      "searchable_text": "text/03.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15707/3.%20BC-tong%20ket%20cong%20tac%20dao%20tao%20va%20cac%20chinh%20sach%20giai%20doan.pdf",
+      "bytes": 1432959,
+      "sha256": "ef1756ffd2f0431dad8ad561b45940521a25629a13f1365eb839cfe57dc285d2"
+    },
+    {
+      "index": 4,
+      "source_name": "4. Bang so sanh thuyet minh chinh sach.pdf",
+      "normalized_file": "files/04_Bang_so_sanh_thuyet_minh_chinh_sach.pdf",
+      "searchable_text": "text/04.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15708/4.%20Bang%20so%20sanh%20thuyet%20minh%20chinh%20sach.pdf",
+      "bytes": 228620,
+      "sha256": "b99f9efaea9b49e98ea9d3f9cad42a74a3afb1644013a8b1880d28e6bc6bdbd0"
+    },
+    {
+      "index": 5,
+      "source_name": "4. BC-tong hop y kienn gop y lan 1.signed.pdf",
+      "normalized_file": "files/05_BC_tong_hop_y_kien_gop_y_lan_1.pdf",
+      "searchable_text": "text/05.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15709/4.%20BC-tong%20hop%20y%20kienn%20gop%20y%20lan%201.signed.pdf",
+      "bytes": 1233810,
+      "sha256": "5d93f362860ae71113093cf20fc496c8d5669f394954fe42d4c2ad65caa793ed"
+    },
+    {
+      "index": 6,
+      "source_name": "4. BC-tong hop y kienn gop y lan2.signed.pdf",
+      "normalized_file": "files/06_BC_tong_hop_y_kien_gop_y_lan_2.pdf",
+      "searchable_text": "text/06.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15710/4.%20BC-tong%20hop%20y%20kienn%20gop%20y%20lan2.signed.pdf",
+      "bytes": 1249041,
+      "sha256": "554fb5abd6e652b72742e1c41ae1e6e71417d6868715160ba739970130facbd6"
+    },
+    {
+      "index": 7,
+      "source_name": "4.2. BC-tong hop y kienn gop y lan2.signed.pdf",
+      "normalized_file": "files/07_4_2_BC_tong_hop_y_kien_gop_y_lan_2.pdf",
+      "searchable_text": "text/07.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15711/4.2.%20BC-tong%20hop%20y%20kienn%20gop%20y%20lan2.signed.pdf",
+      "bytes": 1248617,
+      "sha256": "36c8f82140d59122326e6928e38782d3c730e48c6ba9de14d259ba5fbb182731"
+    },
+    {
+      "index": 8,
+      "source_name": "05- BB.pdf",
+      "normalized_file": "files/08_05_BB_Hop_thong_nhat_noi_dung.pdf",
+      "searchable_text": "text/08.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15712/05-%20BB.pdf",
+      "bytes": 3014316,
+      "sha256": "69d0cf476989a07a9ae528912fc1be70a5db64a8fe5d83f93e78a8560ff1c294"
+    },
+    {
+      "index": 9,
+      "source_name": "5. Bc danh gia tac dong chinh sach dao tao nhan luc (1).pdf",
+      "normalized_file": "files/09_BC_danh_gia_tac_dong_chinh_sach_dao_tao_nhan_luc.pdf",
+      "searchable_text": "text/09.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15713/5.%20Bc%20danh%20gia%20tac%20dong%20chinh%20sach%20dao%20tao%20nhan%20luc%20(1).pdf",
+      "bytes": 1337442,
+      "sha256": "9e38181ce952a8318a10decb8a37fe352690a7ff1da1354ce690c5954a930129"
+    },
+    {
+      "index": 10,
+      "source_name": "5.3.BC-tong hop gop y lan 3 - chinh sua.signed (1).pdf",
+      "normalized_file": "files/10_BC_tong_hop_gop_y_lan_3_chinh_sua.pdf",
+      "searchable_text": "text/10.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15714/5.3.BC-tong%20hop%20gop%20y%20lan%203%20-%20chinh%20sua.signed%20(1).pdf",
+      "bytes": 711167,
+      "sha256": "e0b7812b05d6df86862eda0fdc99a63bfca5227059288b04149e61b8b696462d"
+    },
+    {
+      "index": 11,
+      "source_name": "7. Bao cao Tham dinh NQ quy dinh chinh sach dao tao- boi duong.signed.signed.signed.pdf",
+      "normalized_file": "files/11_Bao_cao_Tham_dinh_Nghi_quyet.pdf",
+      "searchable_text": "text/11.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15715/7.%20Bao%20cao%20Tham%20dinh%20NQ%20quy%20dinh%20chinh%20sach%20dao%20tao-%20boi%20duo.pdf",
+      "bytes": 692410,
+      "sha256": "1790f8d0e1752e34b7790ccc8968becfcee3c9abd03802666c508dfefaa18401"
+    },
+    {
+      "index": 12,
+      "source_name": "8. BC-tiep thu giai trinh BC tham dinh cua So Tu phap.pdf",
+      "normalized_file": "files/12_BC_tiep_thu_giai_trinh_tham_dinh_So_Tu_phap.pdf",
+      "searchable_text": "text/12.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15716/8.%20BC-tiep%20thu%20giai%20trinh%20BC%20tham%20dinh%20cua%20So%20Tu%20phap.pdf",
+      "bytes": 819088,
+      "sha256": "e71c503d793fc301495b670b9925f1f13cb0f050cba5136072d4be6e74025168"
+    },
+    {
+      "index": 13,
+      "source_name": "9. Bao cao tham tra NQ thu hut nhan luc chat luong sua.signed.pdf",
+      "normalized_file": "files/13_Bao_cao_tham_tra_Nghi_quyet_HĐND.pdf",
+      "searchable_text": "text/13.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15717/9.%20Bao%20cao%20tham%20tra%20NQ%20thu%20hut%20nhan%20luc%20chat%20luong%20sua.signed.pdf",
+      "bytes": 1054521,
+      "sha256": "1166428e5b78e7f876af09aab94f3ad7fe44ff0355ef934570e670fd31f8d770"
+    },
+    {
+      "index": 14,
+      "source_name": "BAO CAO TONG HOP Y KIEN TVUBND TINH DOI VOI DU THAO NQ.1.signed.signed.signed.pdf",
+      "normalized_file": "files/14_BC_tong_hop_y_kien_Thanh_vien_UBND_tinh.pdf",
+      "searchable_text": "text/14.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15718/BAO%20CAO%20TONG%20HOP%20Y%20KIEN%20TVUBND%20TINH%20DOI%20VOI%20DU%20THAO%20NQ.1.sig.pdf",
+      "bytes": 830734,
+      "sha256": "4a436b9a4379ed7996da126313f7ae297b14eb9a6e1e363cc785da3e36c5a767"
+    },
+    {
+      "index": 15,
+      "source_name": "BC-giai trinh y kien cua thanh vien UBND tinh G.pdf",
+      "normalized_file": "files/15_BC_giai_trinh_y_kien_Thanh_vien_UBND_tinh.pdf",
+      "searchable_text": "text/15.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15719/BC-giai%20trinh%20y%20kien%20cua%20thanh%20vien%20UBND%20tinh%20G.pdf",
+      "bytes": 752220,
+      "sha256": "1562fa219e67ba667fcbac34b52bddbb8ee85b2c2f9fe027c2ef92b8d62c20ef"
+    },
+    {
+      "index": 16,
+      "source_name": "TTr-trinh ky thong qua lai du thao NQ (1) (1).pdf",
+      "normalized_file": "files/16_TTr_trinh_ky_thong_qua_lai_du_thao_NQ.pdf",
+      "searchable_text": "text/16.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15720/TTr-trinh%20ky%20thong%20qua%20lai%20du%20thao%20NQ%20(1)%20(1).pdf",
+      "bytes": 737123,
+      "sha256": "e7f15403c2408de9813cca02a3eb6a25eab3dc4198358b8d88f33a8a18d4ba44"
+    },
+    {
+      "index": 17,
+      "source_name": "Vv thong bao ket qua dang tai du thao Nghi quyet ban hanh quy dinh chinh sach ho tro dao tao- boi duong CBCCVC.signed.pdf",
+      "normalized_file": "files/17_Thong_bao_ket_qua_dang_tai_du_thao_Nghi_quyet.pdf",
+      "searchable_text": "text/17.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15721/Vv%20thong%20bao%20ket%20qua%20dang%20tai%20du%20thao%20Nghi%20quyet%20ban%20hanh%20qu.pdf",
+      "bytes": 604851,
+      "sha256": "8360f7b623bb3705483d2576a7674adae52c53d9d2a765120386526ffde955fc"
+    },
+    {
+      "index": 18,
+      "source_name": "811 BC-UBND.signed.signed-1.pdf",
+      "normalized_file": "files/18_811_BC_UBND_tiep_thu_giai_trinh_tham_tra.pdf",
+      "searchable_text": "text/18.txt",
+      "source_url": "https://hopkhonggiay.vinhlong.dcs.vn/Pages/FormCommon/ProcessAPIRequest.aspx?Command=DownloadFileByURL&url=/Upload/17735/PhienHop/16834/15906/811%20BC-UBND.signed.signed-1.pdf",
+      "bytes": 810239,
+      "sha256": "a6e5bb95e7e54a73120f26991d66ccc6524dbe8c743afb4a5fa0870e40c21c6b"
+    }
+  ],
+  "failures": []
+}
