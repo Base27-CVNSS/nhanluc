@@ -17,38 +17,53 @@ jobs:
         with:
           ref: main
 
-      - name: Fetch raw meeting page and extract links
+      - name: Fetch and inspect raw meeting page
         run: |
           mkdir -p diagnostics
           python - <<'PY'
-          import json, urllib.request
+          import json, re, urllib.request
           from html.parser import HTMLParser
           from pathlib import Path
 
           URL='https://hopkhonggiay.vinhlong.dcs.vn/Pages/Qr.aspx?Id=16834'
           req=urllib.request.Request(URL,headers={'User-Agent':'Mozilla/5.0 Chrome/150 Safari/537.36'})
           with urllib.request.urlopen(req,timeout=60) as r:
-              raw=r.read()
-              final=r.geturl()
-              ctype=r.headers.get('content-type','')
+              raw=r.read(); final=r.geturl(); ctype=r.headers.get('content-type','')
           text=raw.decode('utf-8','replace')
           Path('diagnostics/source_page.html').write_text(text,encoding='utf-8')
 
           class P(HTMLParser):
               def __init__(self):
-                  super().__init__(); self.links=[]; self.cur=None; self.buf=[]
+                  super().__init__(); self.links=[]; self.scripts=[]; self.hidden=[]; self.cur=None; self.buf=[]
               def handle_starttag(self,tag,attrs):
-                  if tag.lower()=='a':
-                      d=dict(attrs); self.cur={'href':d.get('href',''),'onclick':d.get('onclick',''),'text':''}; self.buf=[]
+                  d=dict(attrs)
+                  if tag.lower()=='a': self.cur={'href':d.get('href',''),'onclick':d.get('onclick',''),'text':''}; self.buf=[]
+                  if tag.lower()=='script' and d.get('src'): self.scripts.append(d.get('src'))
+                  if tag.lower()=='input' and d.get('type','').lower()=='hidden': self.hidden.append({'id':d.get('id',''),'name':d.get('name',''),'value':d.get('value','')})
               def handle_data(self,data):
                   if self.cur is not None: self.buf.append(data)
               def handle_endtag(self,tag):
                   if tag.lower()=='a' and self.cur is not None:
                       self.cur['text']=' '.join(''.join(self.buf).split()); self.links.append(self.cur); self.cur=None; self.buf=[]
           p=P(); p.feed(text)
-          report={'requested_url':URL,'final_url':final,'content_type':ctype,'bytes':len(raw),'links':p.links}
+
+          keywords=['617/TTr-UBND','617','ProcessAPIRequest','DownloadFileByURL','PhienHop','Upload','Qr.aspx','Command=','ajax','fetch(','$.ajax','.pdf','.docx','GetFile','FileByURL','16834']
+          snippets={}
+          low=text.lower()
+          for kw in keywords:
+              pos=[]; start=0; needle=kw.lower()
+              while True:
+                  i=low.find(needle,start)
+                  if i<0: break
+                  pos.append(text[max(0,i-350):min(len(text),i+650)])
+                  start=i+len(needle)
+                  if len(pos)>=20: break
+              snippets[kw]=pos
+
+          urlish=sorted(set(re.findall(r'''(?:https?://[^\"'<>\s]+|/[^\"'<>\s]*(?:ProcessAPIRequest|Upload|PhienHop|Qr\.aspx)[^\"'<>\s]*)''',text,re.I)))
+          report={'requested_url':URL,'final_url':final,'content_type':ctype,'bytes':len(raw),'links':p.links,'script_src':p.scripts,'hidden_inputs':p.hidden,'urlish':urlish[:500],'snippets':snippets}
           Path('diagnostics/links.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
-          print('bytes',len(raw),'links',len(p.links))
+          print('bytes',len(raw),'links',len(p.links),'scripts',len(p.scripts),'urlish',len(urlish))
           PY
 
       - name: Commit diagnostics
@@ -56,5 +71,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add diagnostics
-          git commit -m "ci: capture official source diagnostics" || true
+          git commit -m "ci: expand official source diagnostics" || true
           git push origin HEAD:main || true
