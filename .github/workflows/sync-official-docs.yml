@@ -1,6 +1,6 @@
 name: Sync official Vinh Long dossier
 
-# v2: trigger a fresh sync after repository initialization.
+# v3: commit diagnostic report and any partial downloads so the sync can be audited.
 on:
   workflow_dispatch:
   push:
@@ -35,28 +35,34 @@ jobs:
           pip install playwright pypdf python-docx
           python -m playwright install --with-deps chromium
 
-      - name: Download the 18 official files and extract text
+      - name: Download official files and extract searchable text
+        id: sync
+        continue-on-error: true
         run: python scripts/sync_official_docs.py
 
-      - name: Verify dossier
-        run: |
-          test "$(find files -maxdepth 1 -type f | wc -l)" -eq 18
-          test "$(find text -maxdepth 1 -type f -name '*.txt' | wc -l)" -eq 18
-          python - <<'PY'
-          import json
-          r=json.load(open('sync_report.json',encoding='utf-8'))
-          assert r['downloaded']==18, r
-          print('Verified 18/18 documents')
-          PY
-
-      - name: Commit synchronized files
+      - name: Commit sync result, including diagnostics
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add files text sync_report.json
+          git add files text sync_report.json 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo "No document changes."
+            echo "No sync output to commit."
           else
-            git commit -m "chore: sync official 18-document Vinh Long dossier"
+            git commit -m "chore: sync Vinh Long dossier and diagnostics"
             git push
           fi
+
+      - name: Verify complete dossier
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('sync_report.json')
+          if not p.exists():
+              raise SystemExit('sync_report.json was not produced')
+          r=json.loads(p.read_text(encoding='utf-8'))
+          print(f"Downloaded: {r.get('downloaded')}/{r.get('expected')}")
+          if r.get('downloaded') != 18:
+              raise SystemExit('Official sync is incomplete; inspect sync_report.json')
+          PY
