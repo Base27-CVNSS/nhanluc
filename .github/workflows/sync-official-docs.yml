@@ -1,0 +1,61 @@
+name: Sync official Vinh Long dossier
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/sync_official_docs.py"
+      - ".github/workflows/sync-official-docs.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-vinh-long-dossier
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright pypdf python-docx
+          python -m playwright install --with-deps chromium
+
+      - name: Download the 18 official files and extract text
+        run: python scripts/sync_official_docs.py
+
+      - name: Verify dossier
+        run: |
+          test "$(find files -maxdepth 1 -type f | wc -l)" -eq 18
+          test "$(find text -maxdepth 1 -type f -name '*.txt' | wc -l)" -eq 18
+          python - <<'PY'
+          import json
+          r=json.load(open('sync_report.json',encoding='utf-8'))
+          assert r['downloaded']==18, r
+          print('Verified 18/18 documents')
+          PY
+
+      - name: Commit synchronized files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add files text sync_report.json
+          if git diff --cached --quiet; then
+            echo "No document changes."
+          else
+            git commit -m "chore: sync official 18-document Vinh Long dossier"
+            git push
+          fi
