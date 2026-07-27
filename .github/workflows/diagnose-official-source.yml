@@ -1,0 +1,60 @@
+name: Diagnose Vinh Long official source
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.event_name != 'issues' || github.event.issue.title == '[diag] Vinh Long source'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Fetch raw meeting page and extract links
+        run: |
+          mkdir -p diagnostics
+          python - <<'PY'
+          import json, urllib.request
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          URL='https://hopkhonggiay.vinhlong.dcs.vn/Pages/Qr.aspx?Id=16834'
+          req=urllib.request.Request(URL,headers={'User-Agent':'Mozilla/5.0 Chrome/150 Safari/537.36'})
+          with urllib.request.urlopen(req,timeout=60) as r:
+              raw=r.read()
+              final=r.geturl()
+              ctype=r.headers.get('content-type','')
+          text=raw.decode('utf-8','replace')
+          Path('diagnostics/source_page.html').write_text(text,encoding='utf-8')
+
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.links=[]; self.cur=None; self.buf=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag.lower()=='a':
+                      d=dict(attrs); self.cur={'href':d.get('href',''),'onclick':d.get('onclick',''),'text':''}; self.buf=[]
+              def handle_data(self,data):
+                  if self.cur is not None: self.buf.append(data)
+              def handle_endtag(self,tag):
+                  if tag.lower()=='a' and self.cur is not None:
+                      self.cur['text']=' '.join(''.join(self.buf).split()); self.links.append(self.cur); self.cur=None; self.buf=[]
+          p=P(); p.feed(text)
+          report={'requested_url':URL,'final_url':final,'content_type':ctype,'bytes':len(raw),'links':p.links}
+          Path('diagnostics/links.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('bytes',len(raw),'links',len(p.links))
+          PY
+
+      - name: Commit diagnostics
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add diagnostics
+          git commit -m "ci: capture official source diagnostics" || true
+          git push origin HEAD:main || true
