@@ -2,24 +2,12 @@ name: Sync official Vinh Long dossier
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "scripts/sync_official_docs.py"
-      - ".github/workflows/sync-official-docs.yml"
-  issues:
-    types: [opened]
 
 permissions:
   contents: write
 
-concurrency:
-  group: sync-vinh-long-dossier-v6
-  cancel-in-progress: false
-
 jobs:
   sync:
-    if: github.event_name != 'issues' || github.event.issue.title == '[sync] Vinh Long dossier'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
