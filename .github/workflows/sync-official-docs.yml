@@ -1,5 +1,6 @@
 name: Sync official Vinh Long dossier
 
+# v2: trigger a fresh sync after repository initialization.
 on:
   workflow_dispatch:
   push:
