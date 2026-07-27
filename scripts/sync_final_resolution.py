@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Sync target: final official Resolution 47/2026/NQ-HĐND (triggered 2026-07-27).
 from __future__ import annotations
 
 import hashlib
@@ -42,7 +43,6 @@ def candidate_links(html: str) -> list[str]:
         if ".pdf" in hay and ("47_2026" in hay or "47/2026" in hay or "nq hdnd" in hay):
             links.append(urljoin(PAGE_URL, href))
 
-    # Some CMS templates render attachment URLs inside scripts/data attributes.
     for raw in re.findall(r"(?:https?://[^\"'<>\s]+|/[^\"'<>\s]+\.pdf[^\"'<>\s]*)", html, flags=re.I):
         hay = unquote(raw).lower()
         if "47_2026" in hay or "47%5f2026" in hay or "47%202026" in hay:
@@ -94,7 +94,7 @@ def main() -> None:
     meta = {
         **EXPECTED,
         "source_file_url": pdf_url,
-        "repository_file": str(OUT_FILE.relative_to(OUT_FILE.parents[1])).replace("\\", "/"),
+        "repository_file": "van-ban-chinh-thuc/47_2026_NQ_HDND.pdf",
         "bytes": len(pdf_data),
         "sha256": sha256(pdf_data),
     }
