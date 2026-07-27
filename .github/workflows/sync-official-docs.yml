@@ -1,6 +1,6 @@
 name: Sync official Vinh Long dossier
 
-# v4: write an early marker, then sync and commit diagnostics/partial files.
+# v5: can be started by opening the dedicated sync issue.
 on:
   workflow_dispatch:
   push:
@@ -8,6 +8,8 @@ on:
     paths:
       - "scripts/sync_official_docs.py"
       - ".github/workflows/sync-official-docs.yml"
+  issues:
+    types: [opened]
 
 permissions:
   contents: write
@@ -18,11 +20,14 @@ concurrency:
 
 jobs:
   sync:
+    if: github.event_name != 'issues' || github.event.issue.title == '[sync] Vinh Long dossier'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Record workflow start
         run: |
@@ -31,7 +36,7 @@ jobs:
           printf 'GitHub Actions sync started at %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" > ACTION_STARTED.txt
           git add ACTION_STARTED.txt
           git commit -m "ci: record dossier sync start" || true
-          git push || true
+          git push origin HEAD:main || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -59,7 +64,7 @@ jobs:
             echo "No sync output to commit."
           else
             git commit -m "chore: sync Vinh Long dossier and diagnostics"
-            git push
+            git push origin HEAD:main
           fi
 
       - name: Verify complete dossier
