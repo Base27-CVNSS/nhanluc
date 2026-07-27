@@ -1,6 +1,6 @@
 name: Sync official Vinh Long dossier
 
-# v3: commit diagnostic report and any partial downloads so the sync can be audited.
+# v4: write an early marker, then sync and commit diagnostics/partial files.
 on:
   workflow_dispatch:
   push:
@@ -23,6 +23,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Record workflow start
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          printf 'GitHub Actions sync started at %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" > ACTION_STARTED.txt
+          git add ACTION_STARTED.txt
+          git commit -m "ci: record dossier sync start" || true
+          git push || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
