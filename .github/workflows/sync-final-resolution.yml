@@ -1,0 +1,59 @@
+name: Sync final Resolution 47/2026/NQ-HDND
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/sync_final_resolution.py"
+      - ".github/workflows/sync-final-resolution.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-final-resolution-47-2026
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Download official Resolution 47/2026/NQ-HDND
+        run: python scripts/sync_final_resolution.py
+
+      - name: Verify PDF
+        run: |
+          test -s van-ban-chinh-thuc/47_2026_NQ_HDND.pdf
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('van-ban-chinh-thuc/47_2026_NQ_HDND.pdf')
+          assert p.read_bytes()[:5] == b'%PDF-'
+          print(f'Verified {p} ({p.stat().st_size} bytes)')
+          PY
+
+      - name: Commit official final resolution
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add van-ban-chinh-thuc/47_2026_NQ_HDND.pdf van-ban-chinh-thuc/47_2026_NQ_HDND.metadata.json
+          if git diff --cached --quiet; then
+            echo "Final resolution is already current."
+          else
+            git commit -m "data: add official Resolution 47/2026/NQ-HDND"
+            git push origin HEAD:main
+          fi
