@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# Sync target: final official Resolution 47/2026/NQ-HĐND (triggered 2026-07-27).
 from __future__ import annotations
 
 import hashlib
@@ -12,9 +11,11 @@ import requests
 from bs4 import BeautifulSoup
 
 PAGE_URL = "https://hdnd.vinhlong.gov.vn/chi-tiet-van-ban/VB_ID=16778"
-OUT_DIR = Path(__file__).resolve().parents[1] / "van-ban-chinh-thuc"
+ROOT = Path(__file__).resolve().parents[1]
+OUT_DIR = ROOT / "van-ban-chinh-thuc"
 OUT_FILE = OUT_DIR / "47_2026_NQ_HDND.pdf"
 META_FILE = OUT_DIR / "47_2026_NQ_HDND.metadata.json"
+DIAG_FILE = OUT_DIR / "source_diagnostic.json"
 
 EXPECTED = {
     "so_ky_hieu": "47/2026/NQ-HĐND",
@@ -33,24 +34,44 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def candidate_links(html: str) -> list[str]:
+def collect_links(html: str) -> list[dict[str, str]]:
     soup = BeautifulSoup(html, "html.parser")
-    links: list[str] = []
-    for a in soup.find_all("a", href=True):
-        href = a.get("href", "")
-        label = " ".join(a.stripped_strings)
-        hay = unquote(f"{href} {label}").lower()
-        if ".pdf" in hay and ("47_2026" in hay or "47/2026" in hay or "nq hdnd" in hay):
-            links.append(urljoin(PAGE_URL, href))
+    items: list[dict[str, str]] = []
+    for tag in soup.find_all(["a", "iframe", "embed", "object", "source"]):
+        raw = tag.get("href") or tag.get("src") or tag.get("data") or ""
+        if not raw:
+            continue
+        items.append({
+            "tag": tag.name,
+            "label": " ".join(tag.stripped_strings)[:300],
+            "raw": raw,
+            "absolute": urljoin(PAGE_URL, raw),
+        })
+    return items
 
-    for raw in re.findall(r"(?:https?://[^\"'<>\s]+|/[^\"'<>\s]+\.pdf[^\"'<>\s]*)", html, flags=re.I):
-        hay = unquote(raw).lower()
-        if "47_2026" in hay or "47%5f2026" in hay or "47%202026" in hay:
-            links.append(urljoin(PAGE_URL, raw.replace("&amp;", "&")))
 
-    seen = set()
-    ordered = []
-    for link in links:
+def candidate_links(html: str, all_links: list[dict[str, str]]) -> list[str]:
+    candidates: list[str] = []
+    for item in all_links:
+        hay = unquote(f"{item['raw']} {item['label']}").lower()
+        if any(token in hay for token in [".pdf", "47_2026", "47 2026", "47/2026", "nq hdnd", "download", "file"]):
+            candidates.append(item["absolute"])
+
+    # Also inspect quoted URLs and server-relative file paths embedded in scripts/JSON.
+    patterns = [
+        r"https?://[^\"'<>\s]+",
+        r"/[^\"'<>\s]+\.pdf(?:\?[^\"'<>\s]*)?",
+        r"/[^\"'<>\s]*(?:Download|download|TaiFile|File|file)[^\"'<>\s]*",
+    ]
+    for pattern in patterns:
+        for raw in re.findall(pattern, html, flags=re.I):
+            hay = unquote(raw).lower()
+            if any(token in hay for token in ["47_2026", "47%5f2026", "47%202026", "47/2026", ".pdf", "download", "file"]):
+                candidates.append(urljoin(PAGE_URL, raw.replace("&amp;", "&")))
+
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for link in candidates:
         if link not in seen:
             seen.add(link)
             ordered.append(link)
@@ -58,38 +79,59 @@ def candidate_links(html: str) -> list[str]:
 
 
 def main() -> None:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
     session = requests.Session()
     session.headers.update({
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/150 Safari/537.36",
         "Accept-Language": "vi-VN,vi;q=0.9,en;q=0.8",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Referer": "https://hdnd.vinhlong.gov.vn/",
     })
 
-    page = session.get(PAGE_URL, timeout=60)
+    page = session.get(PAGE_URL, timeout=60, allow_redirects=True)
     page.raise_for_status()
-    links = candidate_links(page.text)
+    all_links = collect_links(page.text)
+    links = candidate_links(page.text, all_links)
+
+    diagnostic = {
+        "requested_url": PAGE_URL,
+        "final_url": page.url,
+        "status": page.status_code,
+        "content_type": page.headers.get("content-type"),
+        "html_bytes": len(page.content),
+        "page_title": BeautifulSoup(page.text, "html.parser").title.string.strip() if BeautifulSoup(page.text, "html.parser").title and BeautifulSoup(page.text, "html.parser").title.string else "",
+        "candidate_links": links,
+        "all_links": all_links,
+        "html_preview": page.text[:12000],
+    }
+    DIAG_FILE.write_text(json.dumps(diagnostic, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
     if not links:
-        raise RuntimeError("Không tìm thấy liên kết PDF đính kèm của Nghị quyết 47/2026/NQ-HĐND trên trang nguồn.")
+        raise RuntimeError("Không tìm thấy liên kết tệp ứng viên; xem van-ban-chinh-thuc/source_diagnostic.json")
 
     pdf_url = None
     pdf_data = None
-    errors = []
+    errors: list[str] = []
     for link in links:
         try:
             resp = session.get(link, timeout=90, allow_redirects=True)
             resp.raise_for_status()
             data = resp.content
+            ctype = (resp.headers.get("content-type") or "").lower()
             if data[:5] == b"%PDF-" and len(data) > 10_000:
                 pdf_url = resp.url
                 pdf_data = data
                 break
-            errors.append(f"{link}: not a PDF ({resp.headers.get('content-type')}, {len(data)} bytes)")
+            errors.append(f"{link}: not PDF ({ctype}, {len(data)} bytes, final={resp.url})")
         except Exception as exc:
             errors.append(f"{link}: {exc}")
 
-    if pdf_data is None or pdf_url is None:
-        raise RuntimeError("Không tải được PDF chính thức. " + " | ".join(errors[:5]))
+    diagnostic["download_errors"] = errors
+    DIAG_FILE.write_text(json.dumps(diagnostic, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    if pdf_data is None or pdf_url is None:
+        raise RuntimeError("Không tải được PDF chính thức; xem source_diagnostic.json")
+
     OUT_FILE.write_bytes(pdf_data)
     meta = {
         **EXPECTED,
