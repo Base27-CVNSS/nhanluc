@@ -7,6 +7,8 @@ on:
     paths:
       - "scripts/sync_final_resolution.py"
       - ".github/workflows/sync-final-resolution.yml"
+  issues:
+    types: [opened]
 
 permissions:
   contents: write
@@ -17,6 +19,7 @@ concurrency:
 
 jobs:
   sync:
+    if: github.event_name != 'issues' || github.event.issue.title == '[sync] Resolution 47/2026/NQ-HDND'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
