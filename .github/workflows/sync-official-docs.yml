@@ -1,6 +1,5 @@
 name: Sync official Vinh Long dossier
 
-# v5: can be started by opening the dedicated sync issue.
 on:
   workflow_dispatch:
   push:
@@ -15,68 +14,53 @@ permissions:
   contents: write
 
 concurrency:
-  group: sync-vinh-long-dossier
+  group: sync-vinh-long-dossier-v6
   cancel-in-progress: false
 
 jobs:
   sync:
     if: github.event_name != 'issues' || github.event.issue.title == '[sync] Vinh Long dossier'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: main
 
-      - name: Record workflow start
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          printf 'GitHub Actions sync started at %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" > ACTION_STARTED.txt
-          git add ACTION_STARTED.txt
-          git commit -m "ci: record dossier sync start" || true
-          git push origin HEAD:main || true
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
+      - name: Install text-extraction dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install playwright pypdf python-docx
-          python -m playwright install --with-deps chromium
+          pip install pypdf python-docx
 
-      - name: Download official files and extract searchable text
-        id: sync
-        continue-on-error: true
+      - name: Download and verify all 18 official documents
         run: python scripts/sync_official_docs.py
 
-      - name: Commit sync result, including diagnostics
-        if: always()
+      - name: Verify complete dossier
+        run: |
+          test "$(find files -maxdepth 1 -type f | wc -l)" -eq 18
+          test "$(find text -maxdepth 1 -type f -name '*.txt' | wc -l)" -eq 18
+          python - <<'PY'
+          import json
+          report=json.load(open('sync_report.json',encoding='utf-8'))
+          assert report['downloaded'] == 18, report
+          assert not report['failures'], report
+          print('Verified: 18/18 official files and 18 searchable text files')
+          PY
+
+      - name: Commit synchronized dossier
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add files text sync_report.json 2>/dev/null || true
+          git add files text sync_report.json
           if git diff --cached --quiet; then
-            echo "No sync output to commit."
+            echo "Official dossier is already current."
           else
-            git commit -m "chore: sync Vinh Long dossier and diagnostics"
+            git commit -m "data: synchronize 18 official Vinh Long dossier files"
             git push origin HEAD:main
           fi
-
-      - name: Verify complete dossier
-        if: always()
-        run: |
-          python - <<'PY'
-          import json, pathlib
-          p=pathlib.Path('sync_report.json')
-          if not p.exists():
-              raise SystemExit('sync_report.json was not produced')
-          r=json.loads(p.read_text(encoding='utf-8'))
-          print(f"Downloaded: {r.get('downloaded')}/{r.get('expected')}")
-          if r.get('downloaded') != 18:
-              raise SystemExit('Official sync is incomplete; inspect sync_report.json')
-          PY
