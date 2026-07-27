@@ -36,27 +36,32 @@ jobs:
       - name: Install dependencies
         run: pip install requests beautifulsoup4
 
-      - name: Download official Resolution 47/2026/NQ-HDND
+      - name: Discover and download official Resolution 47/2026/NQ-HDND
+        id: sync
+        continue-on-error: true
         run: python scripts/sync_final_resolution.py
 
-      - name: Verify PDF
-        run: |
-          test -s van-ban-chinh-thuc/47_2026_NQ_HDND.pdf
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('van-ban-chinh-thuc/47_2026_NQ_HDND.pdf')
-          assert p.read_bytes()[:5] == b'%PDF-'
-          print(f'Verified {p} ({p.stat().st_size} bytes)')
-          PY
-
-      - name: Commit official final resolution
+      - name: Commit PDF or source diagnostics
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add van-ban-chinh-thuc/47_2026_NQ_HDND.pdf van-ban-chinh-thuc/47_2026_NQ_HDND.metadata.json
+          git add van-ban-chinh-thuc/47_2026_NQ_HDND.pdf van-ban-chinh-thuc/47_2026_NQ_HDND.metadata.json van-ban-chinh-thuc/source_diagnostic.json 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo "Final resolution is already current."
+            echo "No new PDF or diagnostics to commit."
           else
-            git commit -m "data: add official Resolution 47/2026/NQ-HDND"
+            git commit -m "data: sync Resolution 47 source and diagnostics"
             git push origin HEAD:main
           fi
+
+      - name: Verify PDF
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('van-ban-chinh-thuc/47_2026_NQ_HDND.pdf')
+          if not p.exists():
+              raise SystemExit('Resolution PDF is not available; inspect van-ban-chinh-thuc/source_diagnostic.json')
+          assert p.read_bytes()[:5] == b'%PDF-'
+          print(f'Verified {p} ({p.stat().st_size} bytes)')
+          PY
